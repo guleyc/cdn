@@ -482,3 +482,47 @@ button:disabled,
 .button:disabled {
   cursor: not-allowed !important;
 }
+
+/* Desktop/Mobile görünüm kontrolü */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+  .desktop-only {
+    display: inline !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: block !important;
+  }
+
+  /* Mobil tablo satırına tıklama efekti */
+  .table-mobile tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .table-mobile tbody tr:hover {
+    background-color: #f9fafb;
+  }
+
+  .table-mobile tbody tr.boosted-row:hover {
+    background-color: #fef3c7;
+  }
+
+  /* Mobil detay alanı animasyonu */
+  .mobile-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+
+  .mobile-details.show {
+    max-height: 300px;
+  }
+}
