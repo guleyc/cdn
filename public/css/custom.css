@@ -505,24 +505,105 @@ button:disabled,
   .table-mobile tbody tr {
     cursor: pointer;
     transition: background-color 0.2s ease;
+    display: block;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
   }
 
   .table-mobile tbody tr:hover {
     background-color: #f9fafb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .table-mobile tbody tr.boosted-row {
+    border-left: 4px solid #eab308;
   }
 
   .table-mobile tbody tr.boosted-row:hover {
     background-color: #fef3c7;
   }
 
-  /* Mobil detay alanı animasyonu */
+  /* Title linkini mobilde devre dışı bırak */
+  .table-mobile tbody tr .listing-title {
+    pointer-events: none;
+    color: #374151 !important;
+    text-decoration: none !important;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* Mobil detay alanı */
   .mobile-details {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out,
+      margin 0.3s ease-out;
+    margin-top: 0;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 0;
   }
 
   .mobile-details.show {
-    max-height: 300px;
+    max-height: 400px;
+    padding: 16px;
+    margin-top: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .mobile-details-content {
+    margin-bottom: 16px;
+  }
+
+  .mobile-details-content > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+  }
+
+  .mobile-details-content > div:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-details-content strong {
+    color: #6b7280;
+    font-weight: 500;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+
+  .mobile-details-content span {
+    color: #374151;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .mobile-details-action {
+    text-align: center;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  /* Tablo header'ı mobilde gizle */
+  .table-mobile thead {
+    display: none;
+  }
+}
+
+/* Desktop görünüm */
+@media (min-width: 769px) {
+  .mobile-details {
+    display: none !important;
+  }
+
+  .listing-title {
+    word-break: break-word;
+    line-height: 1.4;
   }
 }
