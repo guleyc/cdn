@@ -488,6 +488,22 @@ button:disabled,
   overflow-x: auto;
 }
 
+/* Desktop için title wrapping - sadece çok uzun başlıklar için */
+.listing-title {
+  word-break: break-word;
+  line-height: 1.4;
+  display: block;
+}
+
+/* Desktop için title sütunu max genişlik - tabloyu çok genişletmesin */
+@media screen and (min-width: 769px) {
+  .table-mobile td:first-child {
+    max-width: 300px; /* Title için maksimum genişlik */
+    min-width: 200px; /* Minimum genişlik de belirleyelim */
+  }
+}
+
+/* Sadece mobil için responsive tablo */
 @media screen and (max-width: 768px) {
   .table-mobile {
     border: 0;
@@ -508,7 +524,7 @@ button:disabled,
     border-bottom: 3px solid #ddd;
     display: block;
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 15px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -527,6 +543,7 @@ button:disabled,
     padding: 8px 0;
     margin: 0;
     border-bottom: 1px solid #eee;
+    text-align: right;
   }
 
   .table-mobile td:last-child {
@@ -534,47 +551,37 @@ button:disabled,
   }
 
   .table-mobile td:before {
-    content: attr(data-label) ": ";
+    content: attr(data-label);
     font-weight: bold;
     color: #333;
     min-width: 100px;
     flex-shrink: 0;
+    text-align: left;
+    margin-right: 15px;
   }
 
-  .table-mobile td .flex {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .listing-title {
-    word-break: break-word;
-    white-space: normal !important;
-    line-height: 1.4;
-    max-width: 100%;
-  }
-
-  /* Title cell özel stilleri */
+  /* Title özel durumu */
   .table-mobile td[data-label="Title"] {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .table-mobile td[data-label="Title"]:before {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    margin-right: 0;
   }
-}
 
-/* Desktop için de title wrapping */
-@media screen and (min-width: 769px) {
-  .listing-title {
+  .table-mobile td[data-label="Title"] .flex {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .table-mobile .listing-title {
     word-break: break-word;
     white-space: normal;
     line-height: 1.4;
-    display: block;
-  }
-
-  .table-mobile td:first-child {
-    max-width: 200px; /* Title sütunu için max genişlik */
+    text-align: left;
   }
 }
