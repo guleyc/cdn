@@ -1,46 +1,111 @@
 import "./styles.css";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import createGlobe from "cobe";
 import usePartySocket from "partysocket/react";
 
+// The type of messages we'll be receiving from the server
+import type { OutgoingMessage } from "../shared";
+import type { LegacyRef } from "react";
+
 function App() {
-  // Optionally, you can keep the counter or remove it if not needed
-  // const [counter, setCounter] = React.useState(0);
+  // A reference to the canvas element where we'll render the globe
+  const canvasRef = useRef<HTMLCanvasElement>();
+  // The number of markers we're currently displaying
+  const [counter, setCounter] = useState(0);
+  // A map of marker IDs to their positions
+  // Note that we use a ref because the globe's `onRender` callback
+  // is called on every animation frame, and we don't want to re-render
+  // the component on every frame.
+  const positions = useRef<
+    Map<
+      string,
+      {
+        location: [number, number];
+        size: number;
+      }
+    >
+  >(new Map());
+  // Connect to the PartyServer server
+  const socket = usePartySocket({
+    room: "default",
+    party: "globe",
+    onMessage(evt) {
+      const message = JSON.parse(evt.data as string) as OutgoingMessage;
+      if (message.type === "add-marker") {
+        // Add the marker to our map
+        positions.current.set(message.position.id, {
+          location: [message.position.lat, message.position.lng],
+          size: message.position.id === socket.id ? 0.1 : 0.05,
+        });
+        // Update the counter
+        setCounter((c) => c + 1);
+      } else {
+        // Remove the marker from our map
+        positions.current.delete(message.id);
+        // Update the counter
+        setCounter((c) => c - 1);
+      }
+    },
+  });
+
+  useEffect(() => {
+    // The angle of rotation of the globe
+    // We'll update this on every frame to make the globe spin
+    let phi = 0;
+
+    const globe = createGlobe(canvasRef.current as HTMLCanvasElement, {
+      devicePixelRatio: 2,
+      width: 400 * 2,
+      height: 400 * 2,
+      phi: 0,
+      theta: 0,
+      dark: 1,
+      diffuse: 0.8,
+      mapSamples: 16000,
+      mapBrightness: 6,
+      baseColor: [0.3, 0.3, 0.3],
+      markerColor: [0.8, 0.1, 0.1],
+      glowColor: [0.2, 0.2, 0.2],
+      markers: [],
+      opacity: 0.7,
+      onRender: (state) => {
+        // Called on every animation frame.
+        // `state` will be an empty object, return updated params.
+
+        // Get the current positions from our map
+        state.markers = [...positions.current.values()];
+
+        // Rotate the globe
+        state.phi = phi;
+        phi += 0.01;
+      },
+    });
+
+    return () => {
+      globe.destroy();
+    };
+  }, []);
 
   return (
     <div className="App">
       <h1>Where's everyone at?</h1>
-      {/* 
       {counter !== 0 ? (
         <p>
           <b>{counter}</b> {counter === 1 ? "person" : "people"} connected.
         </p>
       ) : (
         <p>&nbsp;</p>
-      )} 
-      */}
+      )}
 
-      {/* Static SVG World Map */}
-      <div style={{ width: "100%", maxWidth: 600, margin: "0 auto" }}>
-        <svg
-          viewBox="0 0 2000 1001"
-          width="100%"
-          height="auto"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="2000" height="1001" fill="#cce6ff" />
-          <g>
-            {/* Simple world map shape, replace with more detailed SVG if desired */}
-            <path
-              d="M1848,675Q1777,780,1650,800Q1523,820,1430,900Q1337,980,1200,950Q1063,920,900,950Q737,980,590,900Q443,820,350,800Q257,780,152,675Q47,570,100,400Q153,230,350,130Q547,30,900,50Q1253,70,1450,130Q1647,190,1700,400Q1753,610,1848,675Z"
-              fill="#a3d977"
-              stroke="#5fa052"
-              strokeWidth="15"
-            />
-          </g>
-        </svg>
-      </div>
+      {/* The canvas where we'll render the globe */}
+      <canvas
+        ref={canvasRef as LegacyRef<HTMLCanvasElement>}
+        style={{ width: 400, height: 400, maxWidth: "100%", aspectRatio: 1 }}
+      />
+
+      {/* Let's give some credit */}
     </div>
   );
 }
